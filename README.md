@@ -42,10 +42,7 @@ This dataset records user interactions with recipes, including a total of 731,92
 - rating: The rating given by the user.
 - review: The text of the user's review.
 
-
-
 ## Step 2: Data Cleaning and Exploratory Data Analysis
-
 ### Data Cleaning
 #### Left merge the recipes and interactions datasets together.
 - This step helps us align each review to its corresponding recipe. 
@@ -53,135 +50,14 @@ This dataset records user interactions with recipes, including a total of 731,92
 This step helps us evaluate what data-cleaning steps are appropriate for the dataset and if we need to conduct data type conversion.
 Our merged_df has 234429 rows × 17 columns. 
 
-
-
 #### Fill all ratings of 0 with np.nan
 We replace all instances of rating 0 with np.nan because a 0 rating might be a placeholder for “no rating” rather than an actual score. When we go to https://www.food.com/ and try to rate one of the recipes, we find that the minimal rate is 1, and users can choose to give a review without rating. Moreover, when we look into the reviews where the rating is 0, we can find out that some reviews are positive and give compliments rather than negative complaints, which gives us more confidence to say that those 0s are not actual ratings but missing values. We found out that there are a total 15036 of missing ratings. We also create a Boolean column, missing_rating, that indicates whether the rating is missing for further assessment of missingness.
-
-
 
 #### NMAR Analysis on these missing ratings
 NMAR (Not Missing At Random) means the probability that a missing rating may be related to the unobserved value or other factors. For instance, there could be no rating for a specific receipt, or it could simply be because of forgetting (if there is neither review nor rating for a specific user interaction), or users might choose not to rate a recipe if they had an extremely negative or extremely positive experience.
 
-
-```python
-# Find if there is any recipes has no user interactions
-# Removes rows where no user exists to rate the recipe, which could be considered as NMAR. 
-recipes_bool = recipes.copy()
-lst_recipe_id = ratings['recipe_id'].unique()
-recipes_bool['missing_interaction'] = recipes_bool['id'].apply(lambda x: True if x in lst_recipe_id else False)
-
-# Count how many recipts have user interactions and display new recipes_bool dataframe after adding 'missing_interaction' boolean column
-print(f"There are total {recipes_bool['missing_interaction'].sum()} receipts that has user interactions, and there are total {recipes.shape[0]} recipes in our 'recipes' dataset.")
-display(recipes_bool.head())
-
-# We find out that there is only one receipt has no user interaction and we want to display this one to get better info(find its recipt_id)
-non_interaction = recipes_bool[recipes_bool['missing_interaction'] == False]
-display(non_interaction)
-
-# We now have confidence to say that the type of the missing rating of this receipt is NMAR, and we can safely drop this receipt from our merged_df
-merged_df = merged_df[~merged_df['id'].isin(non_interaction['id'])]
-merged_df.head()
-```
-
-    There are total 83781 receipts that has user interactions, and there are total 83782 recipes in our 'recipes' dataset.
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>contributor_id</th>
-      <th>...</th>
-      <th>description</th>
-      <th>ingredients</th>
-      <th>n_ingredients</th>
-      <th>missing_interaction</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>111</th>
-      <td>1 brownies in the world    best ever</td>
-      <td>333281</td>
-      <td>40</td>
-      <td>985201</td>
-      <td>...</td>
-      <td>these are the most; chocolatey, moist, rich, d...</td>
-      <td>['bittersweet chocolate', 'unsalted butter', '...</td>
-      <td>9</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>115</th>
-      <td>1 in canada chocolate chip cookies</td>
-      <td>453467</td>
-      <td>45</td>
-      <td>1848091</td>
-      <td>...</td>
-      <td>this is the recipe that we use at my school ca...</td>
-      <td>['white sugar', 'brown sugar', 'salt', 'margar...</td>
-      <td>11</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>118</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>since there are already 411 recipes for brocco...</td>
-      <td>['frozen broccoli cuts', 'cream of chicken sou...</td>
-      <td>9</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>119</th>
-      <td>millionaire pound cake</td>
-      <td>286009</td>
-      <td>120</td>
-      <td>461724</td>
-      <td>...</td>
-      <td>why a millionaire pound cake?  because it's su...</td>
-      <td>['butter', 'sugar', 'eggs', 'all-purpose flour...</td>
-      <td>7</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>125</th>
-      <td>2000 meatloaf</td>
-      <td>475785</td>
-      <td>90</td>
-      <td>2202916</td>
-      <td>...</td>
-      <td>ready, set, cook! special edition contest entr...</td>
-      <td>['meatloaf mixture', 'unsmoked bacon', 'goat c...</td>
-      <td>13</td>
-      <td>True</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 13 columns</p>
-</div>
+##### Investigating missingness due to missing user interaction
+    In our dataset, we found that there are 83781 receipts with user interactions, but we have 83782 recipes in our 'recipes' dataset. This shows that one recipe has zero user reviews.
 
 
 
@@ -225,190 +101,17 @@ merged_df.head()
       <td>these are great for guests to grab on the go! ...</td>
       <td>['country sausage', 'eggs', 'cheddar cheese', ...</td>
       <td>5</td>
-      <td>False</td>
+      <td>True</td>
     </tr>
   </tbody>
 </table>
 <p>1 rows × 13 columns</p>
 </div>
 
+Users don't review certain recipes usually because they don't have a strong opinion towards the recipes. Since this is caused by unobserved value, we conclude this missingness is NMAR, and we drop this recipe from our dataset.
 
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>contributor_id</th>
-      <th>...</th>
-      <th>date</th>
-      <th>rating</th>
-      <th>review</th>
-      <th>missing_rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1 brownies in the world    best ever</td>
-      <td>333281</td>
-      <td>40</td>
-      <td>985201</td>
-      <td>...</td>
-      <td>2008-11-19</td>
-      <td>4.0</td>
-      <td>These were pretty good, but took forever to ba...</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1 in canada chocolate chip cookies</td>
-      <td>453467</td>
-      <td>45</td>
-      <td>1848091</td>
-      <td>...</td>
-      <td>2012-01-26</td>
-      <td>5.0</td>
-      <td>Originally I was gonna cut the recipe in half ...</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>2008-12-31</td>
-      <td>5.0</td>
-      <td>This was one of the best broccoli casseroles t...</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>2009-04-13</td>
-      <td>5.0</td>
-      <td>I made this for my son's first birthday party ...</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>2013-08-02</td>
-      <td>5.0</td>
-      <td>Loved this.  Be sure to completely thaw the br...</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 18 columns</p>
-</div>
-
-
-
-
-```python
-# Find if there is any missingness is because the user didn't give any feedbacks (neither review nor rating).
-merged_df[merged_df['rating'].isna() & merged_df['review'].isna()]
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>contributor_id</th>
-      <th>...</th>
-      <th>date</th>
-      <th>rating</th>
-      <th>review</th>
-      <th>missing_rating</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-<p>0 rows × 18 columns</p>
-</div>
-
-
-
-
-```python
-# Find whether the users choose not to rate a recipe if they had an extremely negative or extremely positive experience.
-# First, we find the numbers of the reviews that has missing ratings
-non_rating = merged_df[merged_df['rating'].isnull()]['review'].tolist()
-print(f"There are total {len(non_rating)} reviews which has missing rating.")
-
-# Next, in order to see the rating distribution of these reviews, we select a random sample of reviews with missing ratings.
-# Then, we give these chosen reviews a properly predicted rating based on our knowledges.
-random.seed(234)
-random_sample_reviews = random.sample(non_rating, 10)
-random_sample_reviews
-```
-
-    There are total 15035 reviews which has missing rating.
-
-
-
-
-
-    ["Do you need vanilla for this? cause I don't have any left after I last baked... ;-; EDIT: I made them, no vanilla. Still tastes delicious.",
-     'Do you use grated Parmesan cheese or shredded ??',
-     'This does sound good, kinda like I smother chicken.  Will try soon.',
-     'These are delicious, I have been making them for years.  At Christmas, I use scallions & roasted red peppers along with the bacon. I have never tried the parmesan cheese.   \n\nWhat no one mentioned is that these freeze beautifully.  Make up to instruction #8, put on a waxed paper lined cookie sheet & freeze for 60 minutes and then place in a freezer bag.  You then just have to take out as many as you want to bake & follow the remaining instructions, baking from a frozen state & just add a couple of minutes to the baking time.  Depending upon whether I am serving these in place of rolls for dinner or as an appetizer, depends on the side I roll from, bigger for dinner rolls and smaller for appetizers.  These are always a hit!!  Thank you for posting the recipe!',
-     'Surprisingly enough, Horse meat works fine as well.; and much leaner than beef.',
-     "Can you replace the Milk, with any other Milk products. I have Celiac's disease also Lactose intolerance.",
-     "My husband loved this, I thought it was ok. The stuffing flavor was quite good. I would suggest using a thinly sliced bacon if you like your bacon crisp. In the given 60 minutes, it was overcooked and the bacon was somewhat undercooked, still kind of rubbery. As a precaution I tied the rolled roast. Next time: Once assembled & tied, I will  sear the bacon to insure it is thoroughly cooked & more appealing. I will definitely adjust the baking time and use a thinner bacon. Also, I could find no possible way to use the dripping to make gravy. I'm a good gravy maker but just couldn't make it happen.",
-     'Did anyone Use all coconut flour no almond flour at all?.',
-     'sounds yummy , will have to make some up tonight.\r\nHave a question on how long these keep for ?',
-     'Fantastic...just as it is. I made this recently for my 50th B-day Party. I got one bite from a friends plate because the bowl was cleaned out before I could get a full serving.']
+##### Investigating the rest of missingness
+We want to find whether the users choose not to rate a recipe if they had an extremely negative or extremely positive experience. In order to see the rating distribution of these reviews, we select a random sample of reviews with missing ratings. Then, we give these chosen reviews a properly predicted rating based on our knowledges.
 
 
 
@@ -428,22 +131,8 @@ Based on the description of each review, I give them each a reasonable rating, a
 | Fantastic...just as it is. I made this recently for my 50th B-day Party. I got one bite from a friends plate because the bowl was cleaned out before I could get a full serving. | 5 |
 
 
-```python
-# We draw the distribution of these predicted ratings and see if there is any significant bumps at both edges of the plot.
-# Manually assign ratings (on a scale from 1 to 5) based on our interpretation above.
-imputed_ratings = [4, 2.5, 3 ,4.5 , 3.5, 2.5, 3, 1.5, 3, 5]
+We draw the distribution of these predicted ratings and see if there is any significant bumps at both edges of the plot.
 
-# Print out each review with its assigned rating for verification.
-df = pd.DataFrame({"ratings": imputed_ratings})
-
-# plt.figure(figsize=(10, 6))
-# sns.histplot(df["ratings"], bins=range(1, 7), kde=True, stat="density", color="skyblue")
-# plt.title("Distribution of Imputed Ratings")
-# plt.xlabel("Rating")
-# plt.ylabel("Density")
-# plt.xticks(range(1, 6))
-# # plt.show()
-```
 
 It turns out that the imputed ratings is more likely a normal distribution, and it suggests that the missing ratings tend to cluster around an average value rather than being skewed toward very high or very low ratings. In other words, it indicates that—based on the review text—the missing ratings do not appear to be systematically biased, which means that these users chose not to review a recipe wasn’t because they had an extremely negative or extremely positive experience.
 
@@ -451,109 +140,9 @@ This evidence is consistent with the missingness being either Missing Completely
 
 So, a normal (bell-shaped) distribution of imputed ratings supports the idea that the missingness in ratings is not being driven by the underlying sentiment or the value of the rating itself(not NMAR).
 
-
-```python
-# pio.renderers.default = "notebook"
-# fig = px.histogram(
-#     df, 
-#     x="ratings", 
-#     nbins=5, 
-#     title="Distribution of Imputed Ratings", 
-#     labels={"ratings": "Rating"},
-#     template="plotly_white",
-#     marginal="violin"  # adds a violin plot on the side
-# )
-# fig.update_xaxes(dtick=1)
-# fig.show()
-```
-
 #### Missingness Dependency of ratings: Permutation Test Implementation
 
-
-```python
-# Implements permutation tests on different numeric columns to assess if the missingness of the rating column depends on those factors.
-def permutation_test_missingness(data, missing_col, numeric_col, n_permutations=1000, random_state=42):
-    """
-    Perform a permutation test to determine if the missingness in ratings 
-    is associated with a numeric column (numeric_col).
-    Returns the observed difference, p-value, and the array of permutation differences.
-    """
-    np.random.seed(random_state)
-    
-    # Compute observed difference in means between missing and non-missing groups.
-    observed_missing_mean = data.loc[data[missing_col], numeric_col].mean()
-    observed_non_missing_mean = data.loc[~data[missing_col], numeric_col].mean()
-    observed_diff = observed_missing_mean - observed_non_missing_mean
-    
-    # Generate permutation distribution of differences
-    perm_diffs = []
-    numeric_values = data[numeric_col].reset_index(drop=True)
-    missing_indicator = data[missing_col].reset_index(drop=True)
-    
-    for _ in range(n_permutations):
-        # Shuffle the missing indicator
-        shuffled = missing_indicator.sample(frac=1, replace=False).reset_index(drop=True)
-        diff = numeric_values[shuffled].mean() - numeric_values[~shuffled].mean()
-        perm_diffs.append(diff)
-    
-    perm_diffs = np.array(perm_diffs)
-    p_value = np.mean(np.abs(perm_diffs) >= np.abs(observed_diff))
-    
-    return observed_diff, p_value, perm_diffs
-
-# Test dependency on 'minutes'
-obs_diff_minutes, p_value_minutes, perm_diffs_minutes = permutation_test_missingness(merged_df, 'missing_rating', 'minutes')
-print(f"Dependency test for 'minutes': Observed difference = {obs_diff_minutes:.2f}, p-value = {p_value_minutes:.4f}")
-
-# # Create a Plotly Express histogram of the permutation distribution
-# fig_minutes = px.histogram(x=perm_diffs_minutes, nbins=30, 
-#                    title="Permutation Distribution of Mean Differences for 'minutes'",
-#                    labels={'x': "Difference in Mean minutes (missing - non-missing)"})
-
-# # Overlay a vertical line at the observed difference
-# fig_minutes.add_vline(x=obs_diff_minutes, line_dash="dash", line_color="red",
-#               annotation_text=f"Observed Diff = {obs_diff_minutes:.2f}",
-#               annotation_position="top right")
-
-# # Improve layout
-# fig_minutes.update_layout(
-#     xaxis_title="Difference in Mean (missing - non-missing)",
-#     yaxis_title="Frequency",
-#     template="plotly_white"
-# )
-# # fig_minutes.show()
-
-
-# # Test dependency on 'n_ingredients'
-# obs_diff_ning, p_value_ning, perm_diffs_ning = permutation_test_missingness(merged_df, 'missing_rating', 'n_ingredients')
-# print(f"Dependency test for 'n_ingredients': Observed difference = {obs_diff_ning:.2f}, p-value = {p_value_ning:.4f}")
-
-# # Create a Plotly Express histogram of the permutation distribution
-# fig_ning = px.histogram(
-#     x=perm_diffs_ning, 
-#     nbins=30, 
-#     title="Permutation Distribution of Mean Differences for 'n_ingredients'",
-#     labels={'x': "Difference in Mean n_ingredients (missing - non-missing)"}
-# )
-
-# # Overlay a vertical dashed line for the observed difference
-# fig_ning.add_vline(
-#     x=obs_diff_ning, 
-#     line_dash="dash", 
-#     line_color="red",
-#     annotation_text=f"Observed Diff = {obs_diff_ning:.2f}",
-#     annotation_position="top right"
-# )
-
-# # Update layout for a cleaner look
-# fig_ning.update_layout(
-#     xaxis_title="Difference in Mean (missing - non-missing)",
-#     yaxis_title="Frequency",
-#     template="plotly_white"
-# )
-# # fig_ning.show()
-
-```
+// TODO, need hypothesis,etc
 
     Dependency test for 'minutes': Observed difference = 51.46, p-value = 0.1020
 
@@ -568,6 +157,10 @@ For n_ingredients, the observed difference is 0.16 with a p-value of 0.0000. Thi
 
 These results suggest that the mechanism for missing ratings is likely MAR (Missing At Random) rather than MCAR (Missing Completely At Random), therefore, iinstead of directly dropping the missing roles, we suggested to imputate those missing rates.
 
+
+#### Missing rating imputation
+
+//TODO
 
 ```python
 # Compute global statistics: global mean and standard deviation
