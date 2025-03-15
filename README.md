@@ -7,7 +7,12 @@
 **Overview**:
 This is the DSC80 project at UCSD, which is based on exploring the relationship between the average receipt ratings and different periods of cooking time.
 
-
+<iframe
+  src="images/Average Rating vs Calories without outliers.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
 ## Step 1: Introduction
 
