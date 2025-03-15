@@ -326,8 +326,6 @@ To better understand how recipe quality relates to various attributes, we explor
     frameborder="0"
 ></iframe>
 
-
-
 - Explore the relationship between recipes' average rating (avg_rating) and the number of ingredients (n_ingredients).
 
     The scatter plot below illustrates the relationship between the average rating and the number of ingredients in a recipe. The Pearson correlation coefficient is approximately -0.004, which indicates that there is virtually no linear relationship between the number of ingredients and the average rating. In other words, the number of ingredients does not systematically affect how users rate recipes, suggesting that other factors may be more influential in determining recipe quality.
@@ -339,7 +337,6 @@ To better understand how recipe quality relates to various attributes, we explor
     frameborder="0"
 ></iframe>
 
-
 - Explore the relationship between recipes' average rating (avg_rating) and the calories (first element from the 'nutrition' column).
 
     The scatter plot below illustrates the relationship between the average recipe rating and calories (after removing outliers). The Pearson correlation coefficient is approximately -0.0034, which indicates that there is virtually no linear relationship between the calorie content and the average rating. In other words, the calorie levels of recipes do not systematically influence how users rate them, implying that other factors are likely more important in determining recipe quality.
@@ -350,9 +347,6 @@ To better understand how recipe quality relates to various attributes, we explor
     height="600"
     frameborder="0"
 ></iframe>
-
-
-
 
 ### Interesting Aggregates
 
@@ -482,7 +476,6 @@ The interactive histogram below displays the permutation distribution of F-stati
     We chose RMSE over MAE in particular because it emphasizes significant errors, which is helpful in ensuring that high deviations in predicted ratings are minimized. However, MAE is also reported for better interpretability. Accuracy and F1-score were not chosen as they are only applicable to classification problems, whereas our task is regression.
 
 
-
 ## Baseline Model
 - Model Description
 
@@ -515,7 +508,6 @@ The interactive histogram below displays the permutation distribution of F-stati
 - Next Steps for Improvement
 
     To improve performance, feature engineering should be considered by adding categorical variables like cuisine type or meal category using encoding techniques. Trying alternative models such as Gradient Boosting Machines (GBM) or Neural Networks may yield better results, as they can capture complex relationships more effectively. Lastly, hyperparameter tuning, optimizing parameters like the number of estimators and tree depth in Random Forest, could enhance model generalization. By refining feature selection and model parameters, we can work toward building a more accurate predictive model.
-
 
 
 ## Final Model
@@ -564,7 +556,6 @@ The interactive histogram below displays the permutation distribution of F-stati
     | Final Random Forest Model | 0.4505 | 0.6277 | 0.0014  |
 
     When we compare the data, we can conclude that our feature-engineered Random Forest model performed better, which means our new features contributed to improved predictions. The higher R² score indicates that non-linear interactions between features may be useful for predicting recipe ratings.
-
 
 
 ## Fairness Analysis
