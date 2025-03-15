@@ -50,470 +50,121 @@ This dataset records user interactions with recipes, including a total of 731,92
 
 ## Step 2: Data Cleaning and Exploratory Data Analysis
 ### Data Cleaning
-#### Left merge the recipes and interactions datasets together.
-- This step helps us align each review to its corresponding recipe. 
-#### Check the columns of merged_df and their data types
-This step helps us evaluate what data-cleaning steps are appropriate for the dataset and if we need to conduct data type conversion.
-Our merged_df has 234429 rows × 17 columns. 
+- Left merge the recipes and interactions datasets together.
+    - This step helps us align each review to its corresponding recipe. 
+- Check the columns of merged_df and their data types
+    - This step helps us evaluate what data-cleaning steps are appropriate for the dataset and if we need to conduct data type conversion. 
+    - Our merged_df has 234429 rows × 17 columns. 
 
-#### Fill all ratings of 0 with np.nan
-We replace all instances of rating 0 with np.nan because a 0 rating might be a placeholder for “no rating” rather than an actual score. When we go to https://www.food.com/ and try to rate one of the recipes, we find that the minimal rate is 1, and users can choose to give a review without rating. Moreover, when we look into the reviews where the rating is 0, we can find out that some reviews are positive and give compliments rather than negative complaints, which gives us more confidence to say that those 0s are not actual ratings but missing values. We found out that there are a total 15036 of missing ratings. We also create a Boolean column, missing_rating, that indicates whether the rating is missing for further assessment of missingness.
+- Fill all ratings of 0 with np.nan
+
+    We replace all instances of rating 0 with np.nan because a 0 rating might be a placeholder for “no rating” rather than an actual score. When we go to https://www.food.com/ and try to rate one of the recipes, we find that the minimal rate is 1, and users can choose to give a review without rating. Moreover, when we look into the reviews where the rating is 0, we can find out that some reviews are positive and give compliments rather than negative complaints, which gives us more confidence to say that those 0s are not actual ratings but missing values. We found out that there are a total 15036 of missing ratings. We also create a Boolean column, missing_rating, that indicates whether the rating is missing for further assessment of missingness.
 
 #### NMAR Analysis on these missing ratings
 NMAR (Not Missing At Random) means the probability that a missing rating may be related to the unobserved value or other factors. For instance, there could be no rating for a specific receipt, or it could simply be because of forgetting (if there is neither review nor rating for a specific user interaction), or users might choose not to rate a recipe if they had an extremely negative or extremely positive experience.
 
-##### Investigating missingness due to missing user interaction
+* Investigating missingness due to missing user interaction
+
     In our dataset, we found that there are 83781 receipts with user interactions, but we have 83782 recipes in our 'recipes' dataset. This shows that one recipe has zero user reviews.
 
+    Users don't review certain recipes usually because none has tried this recipe or they don't have a strong opinion towards the recipe and didn't submit any interaction(nether reviews nor rates). Since this is caused by unobserved value, we conclude this missingness is NMAR, and we drop this recipe from our dataset.
+
+- Investigating the rest of missingness
+
+    We want to find whether the users choose not to rate a recipe if they had an extremely negative or extremely positive experience. In order to see the rating distribution of these reviews, we select a random sample of reviews with missing ratings. Then, we give these chosen reviews a properly predicted rating based on our knowledges.
+
+    Based on the description of each review, I give them each a reasonable rating, and put them in a array 'rating_sample_reviews'.
+
+    We draw the distribution of these predicted ratings and see if there is any significant bumps at both edges of the plot.
+
+![Alt text](<images/Distribution of Imputed Ratings.svg>)
 
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>contributor_id</th>
-      <th>...</th>
-      <th>description</th>
-      <th>ingredients</th>
-      <th>n_ingredients</th>
-      <th>missing_interaction</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>142782</th>
-      <td>napa dave s individual breakfast casseroles</td>
-      <td>314968</td>
-      <td>45</td>
-      <td>238966</td>
-      <td>...</td>
-      <td>these are great for guests to grab on the go! ...</td>
-      <td>['country sausage', 'eggs', 'cheddar cheese', ...</td>
-      <td>5</td>
-      <td>True</td>
-    </tr>
-  </tbody>
-</table>
-<p>1 rows × 13 columns</p>
-</div>
-
-Users don't review certain recipes usually because they don't have a strong opinion towards the recipes. Since this is caused by unobserved value, we conclude this missingness is NMAR, and we drop this recipe from our dataset.
-
-##### Investigating the rest of missingness
-We want to find whether the users choose not to rate a recipe if they had an extremely negative or extremely positive experience. In order to see the rating distribution of these reviews, we select a random sample of reviews with missing ratings. Then, we give these chosen reviews a properly predicted rating based on our knowledges.
-
-
-
-Based on the description of each review, I give them each a reasonable rating, and put them in a array 'rating_sample_reviews'
-
-| Reveiws | Predicted Rating |
-| -------- | -------- |
-| Do you need vanilla for this? cause I don't have any left after I last baked... ;-; EDIT: I made them, no vanilla. Still tastes delicious. | 4 |
-| Do you use grated Parmesan cheese or shredded ?? | 2 |
-| This does sound good, kinda like I smother chicken.  Will try soon. | 3 |
-| These are delicious, I have been making them for years.  At Christmas, I use scallions & roasted red peppers along with the bacon. I have never tried the parmesan cheese.   \n\nWhat no one mentioned is that these freeze beautifully.  Make up to instruction #8, put on a waxed paper lined cookie sheet & freeze for 60 minutes and then place in a freezer bag.  You then just have to take out as many as you want to bake & follow the remaining instructions, baking from a frozen state & just add a couple of minutes to the baking time.  Depending upon whether I am serving these in place of rolls for dinner or as an appetizer, depends on the side I roll from, bigger for dinner rolls and smaller for appetizers.  These are always a hit!!  Thank you for posting the recipe! | 5 |
-| Surprisingly enough, Horse meat works fine as well.; and much leaner than beef. | 4 |
-| Can you replace the Milk, with any other Milk products. I have Celiac's disease also Lactose intolerance. | 2 |
-| My husband loved this, I thought it was ok. The stuffing flavor was quite good. I would suggest using a thinly sliced bacon if you like your bacon crisp. In the given 60 minutes, it was overcooked and the bacon was somewhat undercooked, still kind of rubbery. As a precaution I tied the rolled roast. Next time: Once assembled & tied, I will  sear the bacon to insure it is thoroughly cooked & more appealing. I will definitely adjust the baking time and use a thinner bacon. Also, I could find no possible way to use the dripping to make gravy. I'm a good gravy maker but just couldn't make it happen. | 3 |
-| Did anyone Use all coconut flour no almond flour at all?. | 1 |
-| sounds yummy , will have to make some up tonight.\r\nHave a question on how long these keep for ? | 3 |
-| Fantastic...just as it is. I made this recently for my 50th B-day Party. I got one bite from a friends plate because the bowl was cleaned out before I could get a full serving. | 5 |
-
-
-We draw the distribution of these predicted ratings and see if there is any significant bumps at both edges of the plot.
-
-
-It turns out that the imputed ratings is more likely a normal distribution, and it suggests that the missing ratings tend to cluster around an average value rather than being skewed toward very high or very low ratings. In other words, it indicates that—based on the review text—the missing ratings do not appear to be systematically biased, which means that these users chose not to review a recipe wasn’t because they had an extremely negative or extremely positive experience.
+The plot shows that the imputed ratings is more likely a normal distribution, and it suggests that the missing ratings tend to cluster around an average value rather than being skewed toward very high or very low ratings. In other words, it indicates that—based on the review text—the missing ratings do not appear to be systematically biased, which means that these users chose not to review a recipe wasn’t because they had an extremely negative or extremely positive experience.
 
 This evidence is consistent with the missingness being either Missing Completely at Random (MCAR) or Missing at Random (MAR), rather than NMAR (Not Missing At Random). 
 
 So, a normal (bell-shaped) distribution of imputed ratings supports the idea that the missingness in ratings is not being driven by the underlying sentiment or the value of the rating itself(not NMAR).
 
-#### Missingness Dependency of ratings: Permutation Test Implementation
+#### Missingness Dependency of ratings: 
+In this section, we investigate whether the missingness in the rating column is systematically related to certain recipe attributes. Specifically, we test the dependency of the missing ratings on two numeric columns: minutes (cooking time) and n_ingredients (number of ingredients). For each test, we use a permutation test with the following setup:
+- Test Statistic: 
+We use as our test statistic the absolute difference in the mean of the numeric column between recipes with missing ratings and those with non-missing ratings.
 
-// TODO, need hypothesis,etc
+- Significance Level: We set our significance level at 0.05.
 
-    Dependency test for 'minutes': Observed difference = 51.46, p-value = 0.1020
-
-
-**Test Results**:
-
-The permutation tests indicate different relationships for each predictor:
-
-For minutes, the observed difference between missing and non‐missing ratings is 51.46 with a p-value of 0.1020. This p-value is above the typical 0.05 threshold, suggesting that there isn’t strong evidence to conclude that missing ratings depend on how long a recipe takes. In other words, the cooking time (minutes) does not seem to be significantly related to whether a rating is missing.
-
-For n_ingredients, the observed difference is 0.16 with a p-value of 0.0000. This very low p-value indicates a statistically significant dependency: the number of ingredients is associated with the missingness of the ratings. Although the numeric difference might be small, the significance implies that recipes with different numbers of ingredients have systematically different probabilities of having a missing rating.
-
-These results suggest that the mechanism for missing ratings is likely MAR (Missing At Random) rather than MCAR (Missing Completely At Random), therefore, iinstead of directly dropping the missing roles, we suggested to imputate those missing rates.
+**Permutation Test Implementation**
 
 
-#### Missing rating imputation
+Dependency on Cooking Time (minutes)
+- **Null Hypothesis (H₀)**:
+The missingness in rating does not depend on the recipe’s cooking time. In other words, the mean cooking time is the same for recipes with missing and non-missing ratings.
 
-//TODO
+- **Alternate Hypothesis (H₁)**:
+The missingness in rating does depend on the recipe’s cooking time; that is, the mean cooking time differs between recipes with missing and non-missing ratings.
 
-```python
-# Compute global statistics: global mean and standard deviation
-global_mean_rating = merged_df['rating'].mean()
-global_std_rating = merged_df['rating'].std()
+- **Results**: Dependency test for 'minutes': Observed difference = 51.46, p-value = 0.1020
 
-# Compute recipe-level stats: mean, std, and count per recipe
-recipe_stats = merged_df.groupby('id')['rating'].agg(['mean', 'std', 'count'])
-# Replace missing means with the global mean and missing std with 0
-recipe_stats['mean'] = recipe_stats['mean'].fillna(global_mean_rating)
-recipe_stats['std'] = recipe_stats['std'].fillna(0)
+- **Conculsion**: The observed difference in mean cooking time between recipes with missing ratings and those with non-missing ratings is 51.46 minutes. However, the permutation test yields a p-value of 0.1020, which is greater than the significance level of 0.05. Therefore, we **fail to reject** the null hypothesis. This suggests that the missingness in rating does not significantly depend on the recipe’s cooking time.
 
-def hybrid_impute_rating(row, min_rating=1, max_rating=5, threshold=5):
-    """
-    Impute a missing rating for a recipe using a hybrid approach:
-    
-    - For recipes with at least 'threshold' observed ratings, use the recipe's mean rating.
-    - For recipes with fewer than 'threshold' ratings, use a probabilistic imputation:
-         If there is variation (std > 0), sample from a normal distribution
-         with the recipe's mean and std; if std is 0, just use the mean.
-    - If the recipe is not in recipe_stats or has zero reviews, use the global mean.
-    - Finally, clip the imputed value to be within the allowed range.
-    """
-    # If rating is not missing, return the original rating.
-    if not np.isnan(row['rating']):
-        return row['rating']
-    
-    recipe_id = row['id']
-    
-    # If the recipe is not in the computed stats, fallback to the global mean.
-    if recipe_id not in recipe_stats.index:
-        return global_mean_rating
-    
-    # Retrieve recipe-specific statistics.
-    mean = recipe_stats.loc[recipe_id, 'mean']
-    std = recipe_stats.loc[recipe_id, 'std']
-    count = recipe_stats.loc[recipe_id, 'count']
-    
-    # If there are no observed ratings for this recipe, fallback to the global mean.
-    if count == 0:
-        return global_mean_rating
-    
-    # Case 1: Sufficient data (>= threshold): use the recipe's mean.
-    if count >= threshold:
-        imputed = mean
-    # Case 2: Few ratings (< threshold): use a probabilistic imputation.
-    else:
-        if std > 0:
-            imputed = np.random.normal(mean, std)
-        else:
-            imputed = mean
-    
-    # Ensure the imputed rating falls within the valid range (e.g., 1 to 5).
-    imputed = np.clip(imputed, min_rating, max_rating)
-    return imputed
+<iframe
+    src="images/Permutation Distribution of Mean Differences for 'minutes'.html"
+    width="800"
+    height="600"
+    frameborder="0"
+></iframe>
 
-# Apply the improved hybrid imputation function to each row.
-merged_df['filled_rating'] = merged_df.apply(hybrid_impute_rating, axis=1)
-merged_df.head()
-```
+Dependency on Number of Ingredients (n_ingredients)
+- **Null Hypothesis (H₀)**:
+The missingness in rating does not depend on the number of ingredients in the recipe. That is, the mean number of ingredients is similar between recipes with missing ratings and those with non-missing ratings.
+
+- **Alternate Hypothesis (H₁)**:
+The missingness in rating does depend on the number of ingredients; in other words, there is a significant difference in the mean number of ingredients between the two groups.
+
+- **Results**: Dependency test for 'n_ingredients': Observed difference = 0.16, p-value = 0.0000
+
+- **Conculsion**: In this test, the observed difference in the mean number of ingredients between recipes with missing and non-missing ratings is 0.16. The permutation test produces a p-value of 0.0000, which is below our significance level of 0.05. Thus, we **reject** the null hypothesis. This result indicates that the missingness in rating is significantly associated with the number of ingredients: recipes with missing ratings tend to have a different number of ingredients compared to those with complete ratings.
+
+<iframe
+    src="images/Permutation Distribution of Mean Differences for 'n_ingredients'.html"
+    width="800"
+    height="600"
+    frameborder="0"
+></iframe>
+
+**Summary of Findings**:
+
+These results suggest that the mechanism for missing ratings is likely MAR (Missing At Random) rather than MCAR (Missing Completely At Random), therefore, instead of directly dropping the missing roles, we suggested to imputate those missing rates.
 
 
+**Missing rating imputation Strategy**
 
+The dataset utilized in this study has missing ratings for some of the recipes. As user ratings are one of the main indicators to identify recipe quality, these missing values need to be addressed in a manner that represents the corresponding information regarding each recipe propertly. To do this, we employed a hybrid imputation approach that utilizes global and recipe-level information.
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+- Global and Recipe-Level Statistics
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+First, we computed the global mean and standard deviation of the ratings across all recipes with available ratings. We then grouped the data by recipe ID to calculate recipe-specific statistics – namely, the mean rating, standard deviation, and the count of ratings for each recipe. For recipes that had no observed ratings, we used the global mean as a fallback. Additionally, any missing recipe-level statistics were replaced with appropriate global values (e.g., a missing mean was set to the global mean and a missing standard deviation was set to 0).
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>contributor_id</th>
-      <th>...</th>
-      <th>rating</th>
-      <th>review</th>
-      <th>missing_rating</th>
-      <th>filled_rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1 brownies in the world    best ever</td>
-      <td>333281</td>
-      <td>40</td>
-      <td>985201</td>
-      <td>...</td>
-      <td>4.0</td>
-      <td>These were pretty good, but took forever to ba...</td>
-      <td>False</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1 in canada chocolate chip cookies</td>
-      <td>453467</td>
-      <td>45</td>
-      <td>1848091</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>Originally I was gonna cut the recipe in half ...</td>
-      <td>False</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>This was one of the best broccoli casseroles t...</td>
-      <td>False</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>I made this for my son's first birthday party ...</td>
-      <td>False</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>50969</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>Loved this.  Be sure to completely thaw the br...</td>
-      <td>False</td>
-      <td>5.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 19 columns</p>
-</div>
+- Step 2: Hybrid Imputation
 
+Then, we created a hybrid imputation function to address the issue of missing ratings on a recipe-by-recipe basis:
 
+ Adequate Data (≥5 evaluations):
+For recipes that have at least five observed ratings, we fill in missing values with the recipe's average rating. The assumption here is that a recipe with many ratings has a good estimate of its average quality.
 
+Sparse Data (<5 ratings):
+For recipes with fewer than five ratings, we adopt a probabilistic approach. If there is variation in the available ratings (i.e., a nonzero standard deviation), we sample a rating from a normal distribution centered on the recipe's mean with the corresponding standard deviation. If no variation is present, we simply use the mean. This method helps capture the uncertainty inherent in having limited data for a recipe.
 
-```python
-merged_df.isna().sum().to_dict()
-```
+Clipping:
+Finally, the imputed ratings are clipped to ensure they fall within the acceptable range (for example, 1 to 5), maintaining consistency with the original rating scale.
 
+By combining these techniques, our imputation method preserves the integrity of the original data distribution and minimizes bias in subsequent analyses. The resulting imputed ratings (stored as filled_rating in our dataset) are then used for further tasks such as predictive modeling and hypothesis testing.
 
-
-
-    {'name': 1,
-     'id': 0,
-     'minutes': 0,
-     'contributor_id': 0,
-     'submitted': 0,
-     'tags': 0,
-     'nutrition': 0,
-     'n_steps': 0,
-     'steps': 0,
-     'description': 114,
-     'ingredients': 0,
-     'n_ingredients': 0,
-     'user_id': 0,
-     'recipe_id': 0,
-     'date': 0,
-     'rating': 15035,
-     'review': 57,
-     'missing_rating': 0,
-     'filled_rating': 0}
-
-
-
-
-```python
-# Find the average rating per recipe, as a Series.
-avg_rating_per_recipe = merged_df.groupby('id')['filled_rating'].mean()
-
-# Map the average rating to merged_df
-merged_df['avg_rating'] = merged_df['id'].map(avg_rating_per_recipe)
-
-# Drop the duplicates and name it cleaned_df so we don't modify orginal merged_df in case further needed.
-cleaned_df = merged_df.drop_duplicates(subset=['id'], keep='last')
-
-# Drop the meaningless columns 
-cleaned_df = cleaned_df.drop(columns = ['contributor_id', 'submitted', 'description', 'recipe_id', 'rating', 'review', 'missing_rating', 'filled_rating'])
-display(cleaned_df.head())
-print(cleaned_df.info())
-cleaned_df.isna().sum().to_dict()
-```
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>id</th>
-      <th>minutes</th>
-      <th>tags</th>
-      <th>...</th>
-      <th>n_ingredients</th>
-      <th>user_id</th>
-      <th>date</th>
-      <th>avg_rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1 brownies in the world    best ever</td>
-      <td>333281</td>
-      <td>40</td>
-      <td>['60-minutes-or-less', 'time-to-make', 'course...</td>
-      <td>...</td>
-      <td>9</td>
-      <td>3.87e+05</td>
-      <td>2008-11-19</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1 in canada chocolate chip cookies</td>
-      <td>453467</td>
-      <td>45</td>
-      <td>['60-minutes-or-less', 'time-to-make', 'cuisin...</td>
-      <td>...</td>
-      <td>11</td>
-      <td>4.25e+05</td>
-      <td>2012-01-26</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>412 broccoli casserole</td>
-      <td>306168</td>
-      <td>40</td>
-      <td>['60-minutes-or-less', 'time-to-make', 'course...</td>
-      <td>...</td>
-      <td>9</td>
-      <td>5.21e+05</td>
-      <td>2017-10-17</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>millionaire pound cake</td>
-      <td>286009</td>
-      <td>120</td>
-      <td>['time-to-make', 'course', 'cuisine', 'prepara...</td>
-      <td>...</td>
-      <td>7</td>
-      <td>8.13e+05</td>
-      <td>2008-04-09</td>
-      <td>5.0</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>2000 meatloaf</td>
-      <td>475785</td>
-      <td>90</td>
-      <td>['time-to-make', 'course', 'main-ingredient', ...</td>
-      <td>...</td>
-      <td>13</td>
-      <td>2.22e+06</td>
-      <td>2012-03-21</td>
-      <td>5.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 12 columns</p>
-</div>
-
-
-    <class 'pandas.core.frame.DataFrame'>
-    Index: 83781 entries, 0 to 234428
-    Data columns (total 12 columns):
-     #   Column         Non-Null Count  Dtype  
-    ---  ------         --------------  -----  
-     0   name           83780 non-null  object 
-     1   id             83781 non-null  int64  
-     2   minutes        83781 non-null  int64  
-     3   tags           83781 non-null  object 
-     4   nutrition      83781 non-null  object 
-     5   n_steps        83781 non-null  int64  
-     6   steps          83781 non-null  object 
-     7   ingredients    83781 non-null  object 
-     8   n_ingredients  83781 non-null  int64  
-     9   user_id        83781 non-null  float64
-     10  date           83781 non-null  object 
-     11  avg_rating     83781 non-null  float64
-    dtypes: float64(2), int64(4), object(6)
-    memory usage: 8.3+ MB
-    None
-
-
-
-
-
-    {'name': 1,
-     'id': 0,
-     'minutes': 0,
-     'tags': 0,
-     'nutrition': 0,
-     'n_steps': 0,
-     'steps': 0,
-     'ingredients': 0,
-     'n_ingredients': 0,
-     'user_id': 0,
-     'date': 0,
-     'avg_rating': 0}
-
+#### Add column 'average_rating' containing average rating per recipe.
 
 
 ### Univariate Analysis
+
 
 #### Explore the distribution of the average rating (avg_rating)
 
