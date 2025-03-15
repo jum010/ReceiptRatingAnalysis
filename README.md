@@ -14,6 +14,7 @@ This is the DSC80 project at UCSD, which is based on exploring the relationship 
   frameborder="0"
 ></iframe>
 
+
 ## Step 1: Introduction
 
 Food is not only a requirement but also a source of creativity, culture, and community. As online cooking sites are on the rise, it is increasingly important for chefs, food bloggers, and food companies to understand what makes a recipe successful among users. Our project analyzes a large corpus of culinary data from an online recipe community [food.com](https://www.food.com/). The information comprises two related sets of data: one with in-depth recipe details and another recording users' ratings and reviews. In this project, we concentrate on a single essential question:
