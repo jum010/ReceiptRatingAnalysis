@@ -270,8 +270,8 @@ Since there are many columns doesn't contribute to our analysis, therefore, we w
 
 <iframe
     src="images/Distribution of Average Recipe Ratings.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -281,22 +281,22 @@ Since there are many columns doesn't contribute to our analysis, therefore, we w
 
 <iframe
     src="images/Distribution of Recipe Preparation Time.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
 <iframe
     src="images/Distribution of Recipe Preparation Time violin plot.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
 <iframe
     src="images/Distribution of Recipe Preparation Time without outliers.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -310,8 +310,8 @@ To better understand how recipe quality relates to various attributes, we explor
 
 <iframe
     src="images/Average Rating vs Cooking Time without outliers.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -321,8 +321,8 @@ To better understand how recipe quality relates to various attributes, we explor
 
 <iframe
     src="images/Average Rating vs Number of Cooking Steps.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -332,8 +332,8 @@ To better understand how recipe quality relates to various attributes, we explor
 
 <iframe
     src="images/Average Rating vs Number of Ingredients.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -343,8 +343,8 @@ To better understand how recipe quality relates to various attributes, we explor
 
 <iframe
     src="images/Average Rating vs Calories without outliers.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
@@ -372,8 +372,8 @@ Below is an embedded box plot that further visualizes the distribution of rating
 
 <iframe
     src="images/Comparison of Ratings by Time Category.html"
-    width="800"
-    height="600"
+    width="600"
+    height="400"
     frameborder="0"
 ></iframe>
 
