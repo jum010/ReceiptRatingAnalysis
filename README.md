@@ -126,13 +126,13 @@ Based on the description of each review, I give them each a reasonable rating, a
 | Reveiws | Predicted Rating |
 | -------- | -------- |
 | Do you need vanilla for this? cause I don't have any left after I last baked... ;-; EDIT: I made them, no vanilla. Still tastes delicious. | 4 |
-| Do you use grated Parmesan cheese or shredded ?? | 2.5 |
+| Do you use grated Parmesan cheese or shredded ?? | 2 |
 | This does sound good, kinda like I smother chicken.  Will try soon. | 3 |
-| These are delicious, I have been making them for years.  At Christmas, I use scallions & roasted red peppers along with the bacon. I have never tried the parmesan cheese.   \n\nWhat no one mentioned is that these freeze beautifully.  Make up to instruction #8, put on a waxed paper lined cookie sheet & freeze for 60 minutes and then place in a freezer bag.  You then just have to take out as many as you want to bake & follow the remaining instructions, baking from a frozen state & just add a couple of minutes to the baking time.  Depending upon whether I am serving these in place of rolls for dinner or as an appetizer, depends on the side I roll from, bigger for dinner rolls and smaller for appetizers.  These are always a hit!!  Thank you for posting the recipe! | 4.5 |
-| Surprisingly enough, Horse meat works fine as well.; and much leaner than beef. | 3.5 |
-| Can you replace the Milk, with any other Milk products. I have Celiac's disease also Lactose intolerance. | 2.5 |
+| These are delicious, I have been making them for years.  At Christmas, I use scallions & roasted red peppers along with the bacon. I have never tried the parmesan cheese.   \n\nWhat no one mentioned is that these freeze beautifully.  Make up to instruction #8, put on a waxed paper lined cookie sheet & freeze for 60 minutes and then place in a freezer bag.  You then just have to take out as many as you want to bake & follow the remaining instructions, baking from a frozen state & just add a couple of minutes to the baking time.  Depending upon whether I am serving these in place of rolls for dinner or as an appetizer, depends on the side I roll from, bigger for dinner rolls and smaller for appetizers.  These are always a hit!!  Thank you for posting the recipe! | 5 |
+| Surprisingly enough, Horse meat works fine as well.; and much leaner than beef. | 4 |
+| Can you replace the Milk, with any other Milk products. I have Celiac's disease also Lactose intolerance. | 2 |
 | My husband loved this, I thought it was ok. The stuffing flavor was quite good. I would suggest using a thinly sliced bacon if you like your bacon crisp. In the given 60 minutes, it was overcooked and the bacon was somewhat undercooked, still kind of rubbery. As a precaution I tied the rolled roast. Next time: Once assembled & tied, I will  sear the bacon to insure it is thoroughly cooked & more appealing. I will definitely adjust the baking time and use a thinner bacon. Also, I could find no possible way to use the dripping to make gravy. I'm a good gravy maker but just couldn't make it happen. | 3 |
-| Did anyone Use all coconut flour no almond flour at all?. | 1.5 |
+| Did anyone Use all coconut flour no almond flour at all?. | 1 |
 | sounds yummy , will have to make some up tonight.\r\nHave a question on how long these keep for ? | 3 |
 | Fantastic...just as it is. I made this recently for my 50th B-day Party. I got one bite from a friends plate because the bowl was cleaned out before I could get a full serving. | 5 |
 
