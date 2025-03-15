@@ -16,45 +16,45 @@ Food is not only a requirement but also a source of creativity, culture, and com
 
 Specifically, we examine whether recipes can be categorized as quick (<30 minutes), moderate (30–60 minutes), long (60–120 minutes), and extra long (>120 minutes), and if these categories differ significantly in terms of their average ratings. With the answer to this question, we can further comprehend whether cooking time, an important factor when planning recipes, shares any correlation with how pleasing a recipe is. This can be used by both content providers to tailor their recipes based on user enjoyment as well as consumers to make well-informed decisions based on available time. First, we will look into each dataset and get their information to see how it can better answer our question.
 
-Dataset 1: Recipes
+Dataset 1: `recipes`
 
-This dataset includes a total of 83,782 recipes and provides extensive details about each recipe. Key columns include:
+This raw dataset has `83782 rows × 12 columns`, which means it includes a total of 83,782 recipes and provides extensive details about each recipe. Key columns include:
 
-- name: The recipe name. (Missing values in this column are NMAR, reflecting cases where the website did not display a name.)
-- id: A unique recipe identifier.
-- minutes: The time (in minutes) needed to prepare the recipe. This variable is central to our analysis as it allows us to group recipes by preparation time.
-- contributor_id: The user ID of the person who submitted the recipe.
-- submitted: The submission date.
-- tags: Keywords or tags associated with the recipe.
-- nutrition: Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)].
-- n_steps: The number of steps in the recipe, offering insight into the complexity of instructions.
-- steps: The text detailing each step of the recipe.
-- description: A user-provided description of the recipe. (Missing descriptions are NMAR since they reflect omissions on the website.)
+- `name`: The recipe name. (Missing values in this column are NMAR, reflecting cases where the website did not display a name.)
+- `id`: A unique recipe identifier.
+- `minutes`: The time (in minutes) needed to prepare the recipe. This variable is central to our analysis as it allows us to group recipes by preparation time.
+- `contributor_id`: The user ID of the person who submitted the recipe.
+- `submitted`: The submission date.
+- `tags`: Keywords or tags associated with the recipe.
+- `nutrition`: Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)].
+- `n_steps`: The number of steps in the recipe, offering insight into the complexity of instructions.
+- `steps`: The text detailing each step of the recipe.
+- `description`: A user-provided description of the recipe. (Missing descriptions are NMAR since they reflect omissions on the website.)
 
-Dataset 2: Ratings
+Dataset 2: `ratings`
 
-This dataset records user interactions with recipes, including a total of 731,927 instances of users' ratings. Its key columns are:
+This raw dataset has `731927 rows × 5 columns`, which records user interactions with recipes, including a total of 731,927 instances of users' ratings. Its key columns are:
 
-- user_id: The identifier of the user providing feedback.
-- recipe_id: The unique identifier linking a review to a recipe.
-- date: The date of the interaction.
-- rating: The rating given by the user.
-- review: The text of the user's review.
+- `user_id`: The identifier of the user providing feedback.
+- `recipe_id`: The unique identifier linking a review to a recipe.
+- `date`: The date of the interaction.
+- `rating`: The rating given by the user.
+- `review`: The text of the user's review.
 
 ## Data Cleaning and Exploratory Data Analysis
 ### Data Cleaning
-- Left merge the recipes and interactions datasets together.
-    - This step helps us align each review to its corresponding recipe. 
-- Check the columns of merged_df and their data types
+- Left merge the `recipes` and `interactions` datasets together.
+    - This step helps us align each `review` to its corresponding recipe. 
+- Check the columns of `merged_df` and their data types
     - This step helps us evaluate what data-cleaning steps are appropriate for the dataset and if we need to conduct data type conversion. 
-    - Our merged_df has 234429 rows × 17 columns. 
+    - Our `merged_df` has `234429 rows × 17 columns`. 
 
-- Fill all ratings of 0 with np.nan
+- Fill all ratings of 0 with `np.nan`
 
-    We replace all instances of rating 0 with np.nan because a 0 rating might be a placeholder for “no rating” rather than an actual score. When we go to https://www.food.com/ and try to rate one of the recipes, we find that the minimal rate is 1, and users can choose to give a review without rating. Moreover, when we look into the reviews where the rating is 0, we can find out that some reviews are positive and give compliments rather than negative complaints, which gives us more confidence to say that those 0s are not actual ratings but missing values. We found out that there are a total 15036 of missing ratings. We also create a Boolean column, missing_rating, that indicates whether the rating is missing for further assessment of missingness.
+    We replace all instances of rating 0 with `np.nan` because a 0 rating might be a placeholder for “no rating” rather than an actual score. When we go to https://www.food.com/ and try to rate one of the recipes, we find that the minimal rate is 1, and users can choose to give a review without rating. Moreover, when we look into the reviews where the rating is 0, we can find out that some reviews are positive and give compliments rather than negative complaints, which gives us more confidence to say that those 0s are not actual ratings but missing values. We found out that there are a total 15036 of missing ratings. We also create a Boolean column, missing_rating, that indicates whether the rating is missing for further assessment of missingness.
 
 #### NMAR Analysis on these missing ratings
-NMAR (Not Missing At Random) means the probability that a missing rating may be related to the unobserved value or other factors. For instance, there could be no rating for a specific receipt, or it could simply be because of forgetting (if there is neither review nor rating for a specific user interaction), or users might choose not to rate a recipe if they had an extremely negative or extremely positive experience.
+NMAR (Not Missing At Random) means the probability that a missing `rating` may be related to the unobserved value or other factors. For instance, there could be no rating for a specific receipt, or it could simply be because of forgetting (if there is neither review nor rating for a specific user interaction), or users might choose not to rate a recipe if they had an extremely negative or extremely positive experience.
 
 * Investigating missingness due to missing user interaction
 
@@ -64,9 +64,9 @@ NMAR (Not Missing At Random) means the probability that a missing rating may be 
 
 - Investigating the rest of missingness
 
-    We want to find out whether users choose not to rate a recipe if they had an extremely negative or extremely positive experience. To see the rating distribution of these reviews, we select a random sample of reviews with missing ratings. Then, we give these chosen reviews a properly predicted rating based on our knowledge.
+    We want to find out whether users choose not to rate a recipe if they had an extremely negative or extremely positive experience. To see the `rating` distribution of these reviews, we select a random sample of reviews with missing ratings. Then, we give these chosen reviews a properly predicted rating based on our knowledge.
 
-    Based on the description of each review, I gave each one a reasonable rating and put them in an array called 'rating_sample_reviews'.
+    Based on the description of each `review`, I gave each one a reasonable `rating` and put them in an array called 'rating_sample_reviews'.
 
     We draw the distribution of these predicted ratings and see if there is any significant bumps at both edges of the plot.
 
@@ -80,7 +80,7 @@ This evidence is consistent with the missingness being either Missing Completely
 So, a normal (bell-shaped) distribution of imputed ratings supports the idea that the missingness in ratings is not being driven by the underlying sentiment or the value of the rating itself(not NMAR).
 
 #### Missingness Dependency of ratings: 
-In this section, we investigate whether the missingness in the rating column is systematically related to certain recipe attributes. Specifically, we test the dependency of the missing ratings on two numeric columns: minutes (cooking time) and n_ingredients (number of ingredients). For each test, we use a permutation test with the following setup:
+In this section, we investigate whether the missingness in the rating column is systematically related to certain recipe attributes. Specifically, we test the dependency of the missing ratings on two numeric columns: `minutes` (cooking time) and `n_ingredients` (number of ingredients). For each test, we use a permutation test with the following setup:
 - Test Statistic: 
 As our test statistic, we use the absolute difference in the mean of the numeric column between recipes with missing ratings and those with non-missing ratings.
 
@@ -89,7 +89,7 @@ As our test statistic, we use the absolute difference in the mean of the numeric
 **Permutation Test Implementation**
 
 
-Dependency on Cooking Time (minutes)
+Dependency on Cooking Time (`minutes`)
 
 - **Null Hypothesis (H₀)**:
 The rating's missingness does not depend on the recipe’s cooking time. In other words, the mean cooking time is the same for recipes with missing and non-missing ratings.
@@ -97,7 +97,7 @@ The rating's missingness does not depend on the recipe’s cooking time. In othe
 - **Alternate Hypothesis (H₁)**:
 The missingness in rating does depend on the recipe’s cooking time; that is, the mean cooking time differs between recipes with missing and non-missing ratings.
 
-- **Results**: Dependency test for 'minutes': Observed difference = 51.46, p-value = 0.1020
+- **Results**: Dependency test for `minutes`: Observed difference = 51.46, p-value = 0.1020
 
 - **Conclusion**: The observed difference in mean cooking time between recipes with missing ratings and those with non-missing ratings is 51.46 minutes. However, the permutation test yields a p-value of 0.1020, which is greater than the significance level of 0.05. Therefore, we **fail to reject** the null hypothesis. This suggests that the missingness in rating does not significantly depend on the recipe’s cooking time.
 
@@ -109,15 +109,15 @@ The missingness in rating does depend on the recipe’s cooking time; that is, t
 ></iframe>
 
 
-Dependency on Number of Ingredients (n_ingredients)
+Dependency on Number of Ingredients (`n_ingredients`)
 
 - **Null Hypothesis (H₀)**:
-The missingness in rating does not depend on the number of ingredients in the recipe. That is, the mean number of ingredients is similar between recipes with missing ratings and those with non-missing ratings.
+The missingness in `rating` does not depend on the number of ingredients in the recipe. That is, the mean number of ingredients is similar between recipes with missing ratings and those with non-missing ratings.
 
 - **Alternate Hypothesis (H₁)**:
 The missingness in rating does depend on the number of ingredients; in other words, there is a significant difference in the mean number of ingredients between the two groups.
 
-- **Results**: Dependency test for 'n_ingredients': Observed difference = 0.16, p-value = 0.0000
+- **Results**: Dependency test for `n_ingredients`: Observed difference = 0.16, p-value = 0.0000
 
 - **Conclusion**: In this test, the observed difference in the mean number of ingredients between recipes with missing and non-missing ratings is 0.16. The permutation test produces a p-value of 0.0000, which is below our significance level of 0.05. Thus, we **reject** the null hypothesis. This result indicates that the missingness in rating is significantly associated with the number of ingredients: recipes with missing ratings tend to have a different number of ingredients compared to those with complete ratings.
 
@@ -157,16 +157,16 @@ The dataset utilized in this study has missing ratings for some of the recipes. 
     
         Finally, the imputed ratings are clipped to ensure they fall within the acceptable range (which should be 1 to 5), maintaining consistency with the original rating scale.
 
-By combining these techniques, our imputation method preserves the integrity of the original data distribution and minimizes bias in subsequent analyses. The resulting imputed ratings (stored as filled_rating in our dataset) are then used for further tasks such as predictive modeling and hypothesis testing.
+By combining these techniques, our imputation method preserves the integrity of the original data distribution and minimizes bias in subsequent analyses. The resulting imputed ratings (stored as `filled_rating` in our dataset) are then used for further tasks such as predictive modeling and hypothesis testing.
 
-#### Add column 'average_rating' containing average rating per recipe.
-Using our filled_ratings, we computed the mean rating for each recipe and added it as a new column, "average_rating", to our dataset.
+#### Add column `average_rating` containing average rating per recipe.
+Using our `filled_ratings`, we computed the mean rating for each recipe and added it as a new column, `average_rating`, to our dataset.
 
-#### Create a new 'calories' column
-Since we are also curious about the relationship between ratings and calories, we will take the first element in the 'nutrition' column, which represents the amount of calories, and store it in a new column, 'calories'. 
+#### Create a new `calories` column
+Since we are also curious about the relationship between `rating` and `calories`, we will take the first element in the `nutrition` column, which represents the amount of calories, and store it in a new column, `calories`. 
 
 #### Drop the meaningless columns 
-Since there are many columns doesn't contribute to our analysis, therefore, we will drop these columns, which are, 'contributor_id', 'tags', 'steps', 'submitted', 'description', 'ingredients', 'recipe_id', 'rating', 'review', 'missing_rating', 'filled_rating', and now our cleaned dataset has 83781 rows corresponding to 83781 recipes, 10 columns, below are the information of the missingness in these 10 columns and the information of first five rows which represent five different recipes:
+Since there are many columns doesn't contribute to our analysis, therefore, we will drop these columns, which are, `contributor_id`, `tags`, `steps`, `submitted`, `description`, `ingredients`, `recipe_id`, `rating`, `review`, `missing_rating`, `filled_rating`, and now our cleaned dataset has `83781 rows` corresponding to 83781 recipes, `10 columns`, below are the information of the missingness in these 10 columns and the information of first five rows which represent five different recipes:
 
 | Column         | Missing Count |
 |----------------|---------------|
@@ -264,7 +264,7 @@ Since there are many columns doesn't contribute to our analysis, therefore, we w
 </div>
 
 ### Univariate Analysis
-- Explore the distribution of the average rating (avg_rating)
+- Explore the distribution of the average rating `avg_rating`
 
     In this analysis, we examined the distribution of average recipe ratings across our dataset. As shown in the histogram below, the ratings are highly concentrated in the upper range (around 4.5 to 5), indicating that the majority of recipes receive favorable evaluations from users. This trend suggests that, overall, recipes on our platform are well-regarded.
 
@@ -275,7 +275,7 @@ Since there are many columns doesn't contribute to our analysis, therefore, we w
     frameborder="0"
 ></iframe>
 
-- Explore the distribution of the recipe preparation time (minutes)
+- Explore the distribution of the recipe preparation time `minutes`
 
     We also explored the distribution of recipe preparation times. The initial histogram reveals a right-skewed distribution with a long tail, indicating that while many recipes can be prepared relatively quickly, there are a few outliers with extremely long preparation times. A violin plot further confirms the presence of these outliers. After filtering the data to remove extreme values (using the 1st and 99th percentiles), the resulting histogram provides a clearer view of the typical cooking times, showing that most recipes fall within a more reasonable range.
 
@@ -315,7 +315,7 @@ To better understand how recipe quality relates to various attributes, we explor
     frameborder="0"
 ></iframe>
 
-- Explore the relationship between the average rating of recipes and the cooking steps (n_steps).
+- Explore the relationship between the average rating of recipes and the cooking steps `n_steps`.
 
     The scatter plot below illustrates the relationship between average recipe rating and the number of cooking steps. It shows that the ratings remain relatively stable across different numbers of steps, indicating that recipe complexity (as measured by the number of steps) does not have a strong influence on how users rate the recipes. In addition, the Pearson correlation coefficient between the number of cooking steps and the average rating is 0.005, which is close to 0, which confirms that there is virtually no linear relationship between these two variables.
 
@@ -326,7 +326,7 @@ To better understand how recipe quality relates to various attributes, we explor
     frameborder="0"
 ></iframe>
 
-- Explore the relationship between recipes' average rating (avg_rating) and the number of ingredients (n_ingredients).
+- Explore the relationship between recipes' average rating `avg_rating` and the number of ingredients `n_ingredients`.
 
     The scatter plot below illustrates the relationship between the average rating and the number of ingredients in a recipe. The Pearson correlation coefficient is approximately -0.004, which indicates that there is virtually no linear relationship between the number of ingredients and the average rating. In other words, the number of ingredients does not systematically affect how users rate recipes, suggesting that other factors may be more influential in determining recipe quality.
 
@@ -337,9 +337,9 @@ To better understand how recipe quality relates to various attributes, we explor
     frameborder="0"
 ></iframe>
 
-- Explore the relationship between recipes' average rating (avg_rating) and the calories (first element from the 'nutrition' column).
+- Explore the relationship between recipes' average rating `avg_rating` and the `calories` (first element from the `nutrition` column).
 
-    The scatter plot below illustrates the relationship between the average recipe rating and calories (after removing outliers). The Pearson correlation coefficient is approximately -0.0034, which indicates that there is virtually no linear relationship between the calorie content and the average rating. In other words, the calorie levels of recipes do not systematically influence how users rate them, implying that other factors are likely more important in determining recipe quality.
+    The scatter plot below illustrates the relationship between the `avg_rating` and `calories` (after removing outliers). The Pearson correlation coefficient is approximately -0.0034, which indicates that there is virtually no linear relationship between the calorie content and the average rating. In other words, the calorie levels of recipes do not systematically influence how users rate them, implying that other factors are likely more important in determining recipe quality.
 
 <iframe
     src="images/Average Rating vs Calories without outliers.html"
@@ -379,9 +379,9 @@ Below is an embedded box plot that further visualizes the distribution of rating
 
 
 ## Assessment of Missingness
-When we look at our original dataset, merged_df, to see if there are any missing values in each column that could affect the bias in our analysis, we find that four columns total contain missing values: 'name', 'description', 'rating', and 'review'.
+When we look at our original dataset, `merged_df`, to see if there are any missing values in each column that could affect the bias in our analysis, we find that four columns total contain missing values: `name`, `description`, `rating`, and `review`.
 
-According to previous analysis, missingness in “rating” is mostly MAR and was handled by imputation. Now, we are going to look at the other three. 
+According to previous analysis, missingness in `rating` is mostly MAR and was handled by imputation. Now, we are going to look at the other three. 
 
 | Column           | Missing Count |
 |------------------|---------------|
@@ -406,11 +406,11 @@ According to previous analysis, missingness in “rating” is mostly MAR and wa
 | filled_rating    | 0             |
 | avg_rating       | 0             |
 
-**Missingness of 'name' and 'description'**: When we examine the imported dataset 'recipes', we observe that missing values in 'name' and 'description' reflect their absence in the original source. In other words, if a recipe's name or description is not provided on the website, it will be missing in our dataset. Therefore, the missing values in 'name' and 'description' are NMAR (Not Missing At Random) because the information was never recorded or displayed.
+**Missingness of `name` and `description`**: When we examine the imported dataset `recipes`, we observe that missing values in `name` and `description` reflect their absence in the original source. In other words, if a recipe's name or description is not provided on the website, it will be missing in our dataset. Therefore, the missing values in `name` and `description` are NMAR (Not Missing At Random) because the information was never recorded or displayed.
 
-**Missingness of 'review'** In previous analyses, when analyzing the missingness of 'rating', we found that the absence of user feedback does not cause missing ratings—meaning, missing 'rating' values do not occur simultaneously with missing 'review' values. This suggests that the user may choose not to provide a review even when a rating is given. Therefore, the missing values in 'review' are NMAR (Not Missing At Random) because the review was omitted despite the rating being provided.
+**Missingness of `review`** In previous analyses, when analyzing the missingness of `rating`, we found that the absence of user feedback does not cause missing ratings—meaning, missing `rating` values do not occur simultaneously with missing `review` values. This suggests that the user may choose not to provide a review even when a rating is given. Therefore, the missing values in `review` are NMAR (Not Missing At Random) because the review was omitted despite the rating being provided.
 
-In conclusion, the missingness in 'name', 'description', and 'review' is NMAR because these values are absent from the original data source or omitted by the user. Since these columns (name, description, review) are not central to our main analysis, dropping them won't have any effect or cause any bias. We can safely use our cleaned_df, which has the 'description' and 'review' columns dropped, for the hypothesis test.
+In conclusion, the missingness in `name`, `description`, and `review` is NMAR because these values are absent from the original data source or omitted by the user. Since these columns (`name`, `description`, `review`) are not central to our main analysis, dropping them won't have any effect or cause any bias. We can safely use our `cleaned_df`, which has the `description` and `review` columns dropped, for the hypothesis test.
 
 ## Hypothesis Testing
 
@@ -444,18 +444,18 @@ The interactive histogram below displays the permutation distribution of F-stati
 ## Framing a Prediction Problem
 - Prediction Problem and Type
 
-    The objective of our prediction task is to predict the average rating of a recipe based on recipe characteristics available at the time of posting. Since the response variable, average rating (avg_rating), is a continuous numerical value (typically on a scale of 1 to 5), this is a regression problem rather than a classification problem.
+    The objective of our prediction task is to predict the average rating of a recipe based on recipe characteristics available at the time of posting. Since the response variable, average rating `avg_rating`, is a continuous numerical value (typically on a scale of 1 to 5), this is a regression problem rather than a classification problem.
 
 - Response Variable and Justification
 
-    The response variable for this model is the average rating (avg_rating), which represents the average user rating assigned to a recipe. This variable was chosen because it directly reflects user preferences and provides a quantitative measure of recipe success. By predicting avg_rating, we aim to understand how certain recipe attributes influence user satisfaction.
+    The response variable for this model is the average rating `avg_rating`, which represents the average user rating assigned to a recipe. This variable was chosen because it directly reflects user preferences and provides a quantitative measure of recipe success. By predicting `avg_rating`, we aim to understand how certain recipe attributes influence user satisfaction.
 
 - Features Available at Prediction Time
 
     Only recipe-level attributes available at the time of posting can be used at the time of prediction. This ensures that our model reflects a real-world scenario where recipe ratings must be predicted before any user interactions occur. The features used in our model are:
-    - n_steps: Number of steps required to prepare the recipe.
-    - n_ingredients: Number of ingredients used in the recipe.
-    - calories: Estimated calorie content of the recipe.
+    - `n_steps`: Number of steps required to prepare the recipe.
+    - `n_ingredients`: Number of ingredients used in the recipe.
+    - `calories`: Estimated calorie content of the recipe.
 
     These three features were selected based on insights from our Bivariate Analysis, where they exhibited some level of correlation with the average rating. They are quantitative, consistently available, and interpretable, making them suitable for building a robust predictive model.
 
@@ -513,8 +513,8 @@ The interactive histogram below displays the permutation distribution of F-stati
 ## Final Model
 - Feature Engineering and Justification
     To enhance our model's predictive ability, we introduced two new features:
-    -	cal_per_ing (Calories per ingredient): This feature normalizes calorie content relative to the number of ingredients, helping to assess a recipe's calorie density. We hypothesize that healthier recipes (fewer calories per ingredient) may receive higher ratings from users who prioritize nutrition.
-    -	steps_per_ing (Steps per ingredient): This feature captures the complexity of a recipe relative to its ingredients. A recipe with many steps but few ingredients may indicate intricate techniques, while a recipe with many ingredients but few steps might be more straightforward to prepare. We hypothesized that higher complexity could lead to lower ratings if users find the recipe challenging to follow.
+    -	`cal_per_ing` (Calories per ingredient): This feature normalizes calorie content relative to the number of ingredients, helping to assess a recipe's calorie density. We hypothesize that healthier recipes (fewer calories per ingredient) may receive higher ratings from users who prioritize nutrition.
+    -	`steps_per_ing` (Steps per ingredient): This feature captures the complexity of a recipe relative to its ingredients. A recipe with many steps but few ingredients may indicate intricate techniques, while a recipe with many ingredients but few steps might be more straightforward to prepare. We hypothesized that higher complexity could lead to lower ratings if users find the recipe challenging to follow.
 
     These features are valuable additions because they introduce a refined understanding of recipe difficulty and nutritional content. Unlike raw calorie count or step count, these new variables provide contextual information about a recipe’s structure. This added context can help the model differentiate between similar recipes that may have different levels of complexity and healthiness, leading to better predictions.
 
@@ -524,15 +524,15 @@ The interactive histogram below displays the permutation distribution of F-stati
 
     To optimize the model, we conducted hyperparameter tuning using GridSearchCV with 5-fold cross-validation. We focused on tuning the following parameters:
 
-    - n_estimators: Number of trees in the forest
-    - max_depth: Maximum depth of each decision tree
-    - min_samples_split: Minimum number of samples required to split a node
+    - `n_estimators`: Number of trees in the forest
+    - `max_depth`: Maximum depth of each decision tree
+    - `min_samples_split`: Minimum number of samples required to split a node
 
     After running the grid search, the best-performing hyperparameters were:
 
-    - n_estimators = 100
-    - max_depth = 5
-    - min_samples_split = 2
+    - `n_estimators` = 100
+    - `max_depth` = 5
+    - `min_samples_split` = 2
 
     These values suggest that a relatively shallow Random Forest (max depth of 5) with a moderate number of estimators (100 trees) provides the best trade-off between bias and variance, preventing overfitting while capturing useful patterns.
 
